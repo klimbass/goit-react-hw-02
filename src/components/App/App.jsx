@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Descriptions from "../Descriptions/Descriptions";
+import Description from "../Description/Description";
 import Options from "../Options/Options";
 import Feedback from "../Feedback/Feedback";
 import Notification from "../Notification/Notification";
@@ -23,8 +23,7 @@ function App() {
     window.localStorage.setItem("savedFeed", JSON.stringify(count));
   }, [count]);
 
-  const updateFeedback = (event) => {
-    const feedbackType = event.target.textContent.toLowerCase();
+  const updateFeedback = (feedbackType) => {
     setCount({ ...count, [feedbackType]: count[feedbackType] + 1 });
   };
 
@@ -37,17 +36,24 @@ function App() {
   };
 
   const totalFeedback = count.good + count.bad + count.neutral;
+  const positiveFeedback = Math.round((count.good / totalFeedback) * 100);
 
   return (
     <>
-      <Descriptions />
+      <Description />
       <Options
         handleClick={updateFeedback}
         total={totalFeedback}
         reset={resetFeedback}
       />
-      <Feedback value={count} total={totalFeedback} />
-      <Notification total={totalFeedback} />
+      {totalFeedback > 0 && (
+        <Feedback
+          value={count}
+          total={totalFeedback}
+          positivePercent={positiveFeedback}
+        />
+      )}
+      {!totalFeedback && <Notification total={totalFeedback} />}
     </>
   );
 }
